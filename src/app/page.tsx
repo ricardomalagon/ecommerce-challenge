@@ -1,95 +1,62 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
 
-export default function Home() {
+import { useState, useEffect } from "react";
+import styled from "styled-components";
+
+import BaseContainer from "@/components/container";
+
+import { getProducts } from "@/api/products";
+
+import { ProductType } from "@/lib/types";
+
+import Header from "@/parts/homepage/header";
+import Search from "@/parts/homepage/search";
+import Category from "@/parts/homepage/category";
+import Popular from "@/parts/homepage/popular";
+
+function Home() {
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [products, setProducts] = useState<ProductType[]>([]);
+
+  useEffect(() => {
+    async function fetchData() {
+      const { data } = await getProducts();
+      setProducts(data);
+    }
+
+    fetchData();
+  }, []);
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
+    <Container>
+      <Header />
+
+      <div style={{ marginTop: "24px" }}>
+        <div className="name">Hi Mr. Michael,</div>
+        <div className="title">Welcome Back!</div>
       </div>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+      <Search onChange={(e) => setSearchValue(e.target.value)} />
+      <Category />
+      <Popular products={products} />
+    </Container>
   );
 }
+
+export default Home;
+
+const Container = styled(BaseContainer)`
+  padding: 16px;
+  min-height: calc(100vh - 32px);
+
+  .name {
+    color: ${(props) => props.theme.colors.doveGray};
+  }
+
+  .title {
+    margin-top: 8px;
+    font-size: 24px;
+    color: ${(props) => props.theme.colors.black};
+    font-weight: 600;
+  }
+`;
